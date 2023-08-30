@@ -1,0 +1,6 @@
+---
+- hosts: kube-cluster
+  gather_facts: no
+  become: yes
+  roles:
+    - { role: uninstall, tags: uninstall }
