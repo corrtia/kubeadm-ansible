@@ -1,7 +1,7 @@
 ---
 
 - name: Reset Kubernetes component
-  shell: "kubeadm reset --force --cri-socket=/var/run/{{ container_runtime }}/{{ container_runtime }}.sock"
+  shell: "kubeadm reset --force"
   register: reset_cluster
 
 - name: Join to Kubernetes cluster

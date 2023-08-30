@@ -2,25 +2,32 @@
 - name: Install Docker container engine
   include_tasks: pkg.yml
 
-- name: Copy Docker engine service file
+- name: Copy Docker environment config file
   register: change_docker
   template:
-    src: "docker.service.j2"
-    dest: "{{ systemd_dir }}/docker.service"
-    owner: root
-    group: root
-    mode: 0755
-
-- name: Copy Docker environment config file
-  template: src=docker.j2 dest={{ system_env_dir }}/docker
-
-- name: Add any insecure registries to Docker config
-  when: insecure_registries is defined and insecure_registries | length > 0
-  lineinfile: dest={{ system_env_dir }}/docker regexp=^INSECURE_REGISTRY= line=INSECURE_REGISTRY="{% for reg in insecure_registries %}--insecure-registry={{ reg }} {% endfor %}"
+    src: "daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
 
 - name: Add registry to Docker config
-  when: add_registry is defined and add_registry > 0
-  lineinfile: dest={{ system_env_dir }}/docker regexp=^ADD_REGISTRY= line=ADD_REGISTRY="{% for reg in add_registry %}--add-registry={{ reg }} {%endfor %}"
+  when: docker_registry_mirrors is defined and docker_registry_mirrors > 0
+  lineinfile: 
+    path: /etc/docker/daemon.json
+    regexp: '^(\s*)"registry-mirrors": .*'
+    line : '    "registry-mirrors": [ "{{ docker_registry_mirrors }}" ],'
+
+- name: Add dns server to Docker config
+  when: docker_dns is defined and docker_dns > 0
+  lineinfile: 
+    dest: /etc/docker/daemon.json
+    regexp: '^(\s*)"dns".*'
+    line: '    "dns": [ "{{ docker_dns }}" ],'
+
+- name: Add insecure registries to Docker config
+  when: docker_insecure_registries is defined and docker_insecure_registries > 0
+  lineinfile: 
+    dest: /etc/docker/daemon.json
+    regexp: '^(\s*)"insecure-registries".*'
+    line: '    "insecure-registries": [ "{{ docker_insecure_registries }}" ],'
 
 - name: Enable and check Docker service
   systemd:

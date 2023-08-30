@@ -1,49 +1,55 @@
 ---
 - name: Install apt-transport-https
-  when: ansible_os_family == "Debian"
+  when: os_distro == "Debian"
   apt:
     name: "apt-transport-https"
     state: present
     update_cache: yes
 
 - name: Add Docker APT GPG key
-  when: ansible_os_family == "Debian"
+  when: os_distro == "Debian"
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
 
 - name: Add Docker APT repository
-  when: ansible_os_family == "Debian"
+  when: os_distro == "Debian"
   apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu xenial stable
+    repo: deb [arch={{ os_arch.stdout }}] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu   focal stable
     state: present
     filename: "docker"
 
 - name: Add Docker yum repository
-  when: ansible_os_family == "RedHat"
+  when: os_distro == "RedHat"
   yum_repository:
     name: Docker
     description: Docker Repository
     file: docker
-    baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+    baseurl: https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/{{ os_version.stdout }}/{{ os_arch.stdout }}/stable/
     enabled: yes
     gpgcheck: yes
     gpgkey: https://download.docker.com/linux/centos/gpg
 
 - name: Install docker engine (RHEL/CentOS)
-  when: ansible_os_family == "RedHat"
+  when: os_distro == "RedHat"
   yum:
-    name: "docker-ce-selinux-{{ docker_version }}.*"
+    name: 
+      - "docker-ce-{{ docker_version }}"
+      - "docker-ce-cli-{{ docker_version }}"
+      - "containerd.io"
     state: present
 
 - name: Install docker engine (Debian/Ubuntu)
-  when: ansible_os_family == "Debian"
+  when: os_distro == "Debian"
   apt:
     update_cache: yes
-    name: "docker-ce={{ docker_version }}*"
+    name:       
+      - "docker-ce-{{ docker_version }}"
+      - "docker-ce-cli-{{ docker_version }}"
+      - "containerd.io"
     state: present
 
 - name: Hold docker version
-  when: ansible_os_family == "Debian"
+  when: os_distro == "Debian"
   dpkg_selections:
     name: docker-ce
     selection: hold

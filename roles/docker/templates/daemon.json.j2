@@ -1,0 +1,20 @@
+{
+    "exec-opts": [
+        "native.cgroupdriver=systemd",
+        "selinux-enabled=false"
+    ],
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "100m",
+        "max-file": "5"
+    },
+    "data-root": "/data/docker",
+    "storage-driver": "overlay2",
+    "storage-opts": [
+        "overlay2.override_kernel_check=true"
+    ],
+    "registry-mirrors": [],
+    "dns": [],
+    "insecure-registries" : [],
+    "live-restore": true
+}
