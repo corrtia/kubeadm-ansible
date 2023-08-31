@@ -26,15 +26,19 @@
 - name: Install kubernetes packages (RHEL/CentOS)
   when: os_distro == "RedHat"
   yum:
-    name: "{{ pkgs }}"
+    name:
+      - "kubelet-{{ kube_version }}"
+      - "kubeadm-{{ kube_version }}"
+      - "kubectl-{{ kube_version }}"
     update_cache: yes
     state: present
-  with_items: "{{ pkgs }}"
 
 - name: Install kubernetes packages (Debian/Ubuntu)
   when: os_distro == "Debian"
   apt:
-    name: "{{ pkgs }}"
+    name:
+      - "kubelet-{{ kube_version }}"
+      - "kubeadm-{{ kube_version }}"
+      - "kubectl-{{ kube_version }}"
     update_cache: yes
     state: present
-  with_items: "{{ pkgs }}"

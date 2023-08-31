@@ -1,4 +1,3 @@
 ---
 dependencies:
   - { role: commons/os-checker }
-  - { role: commons/pre-install, pkgs: ["kubelet-{{ kube_version }}", "kubeadm-{{ kube_version }}", "kubectl-{{ kube_version }}"] }

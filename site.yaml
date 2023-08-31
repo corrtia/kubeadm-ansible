@@ -4,6 +4,18 @@
   become: yes
   roles:
     - { role: docker, tags: docker }
+    - { role: kubernetes/install, tags: kubernetes }
+
+- hosts: master[0]
+  gather_facts: yes
+  become: yes
+  task:
+    - name: "kube-vip role"
+      include_role:
+        name: kube-vip
+        when: kube_vip is defined and kube_vip > 0
+        run_once: yes
+        tags: kube-vip
 
 - hosts: master
   gather_facts: yes

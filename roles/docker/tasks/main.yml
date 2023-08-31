@@ -2,6 +2,11 @@
 - name: Install Docker container engine
   include_tasks: pkg.yml
 
+- name: Create Docker environment config directory
+  file:
+    path: "/etc/docker/"
+    state: directory
+
 - name: Copy Docker environment config file
   register: change_docker
   template:
