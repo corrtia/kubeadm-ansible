@@ -1,13 +1,12 @@
 ---
 
-- name: Reset Kubernetes component
-  shell: "kubeadm reset --force"
-  register: reset_cluster
+#- name: Reset Kubernetes component
+#  shell: "kubeadm reset --force"
+#  register: reset_cluster
 
-- name: Init Kubernetes cluster
+- name: Init Kubernetes cluster without HA
   when: 
-    - reset_cluster is succeeded
-    - kube_vip == ""
+    - kube_vip is not defined or  kube_vip == ""
   shell: |
     kubeadm init --service-cidr {{ service_cidr }} \
                  --kubernetes-version {{ kube_version }} \
@@ -21,7 +20,34 @@
   register: init_cluster
   # See: https://github.com/jetstack/cert-manager/issues/2640 with using kubeadm + calico + cert-manager
   environment:
-    no_proxy: "$no_proxy,.svc,.svc.cluster.local"
+    #no_proxy: "$no_proxy,.svc,.svc.cluster.local"
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+- name: Init Kubernetes cluster with HA
+  when: 
+    - kube_vip is defined and kube_vip > 0
+  shell: |
+    kubeadm init --service-cidr {{ service_cidr }} \
+                 --kubernetes-version {{ kube_version }} \
+                 --pod-network-cidr {{ pod_network_cidr }} \
+                 --token {{ token }} \
+                 --apiserver-advertise-address {{ master_ip }} \
+                 --control-plane-endpoint {{ kube_vip }}:6443 \
+                 --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers \
+                 --upload-certs \
+                 {{ kubeadm_opts }} \
+                 {{ init_opts }}
+  register: init_cluster
+  # See: https://github.com/jetstack/cert-manager/issues/2640 with using kubeadm + calico + cert-manager
+  environment:
+    #no_proxy: "$no_proxy,.svc,.svc.cluster.local"
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
 
 - name: Create Kubernetes config directory
   file:

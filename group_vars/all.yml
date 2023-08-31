@@ -34,7 +34,7 @@ network: calico
 # For example, on DigitalOcean, you would use eth1 as that is the default private network interface.
 network_interface: "bond0"
 
-kube_vip: ""
+kube_vip: "10.106.21.104"
 
 
 #systemd_dir: /lib/systemd/system
