@@ -4,7 +4,7 @@
   shell: "kubeadm reset --force"
   register: reset_cluster
 
-- name: Join to Kubernetes cluster
+- name: Nodes join to Kubernetes cluster
   when: reset_cluster is succeeded
   shell: |
     kubeadm join --token {{ token }} \

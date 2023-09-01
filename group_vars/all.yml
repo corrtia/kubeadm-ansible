@@ -13,7 +13,6 @@ docker_insecure_registries: "https://registry.docker-cn.com"
 
 # Kubernetes
 kube_version: 1.23.0
-token: b0f7b8.8d1767876297d85c
 
 # 1.8.x feature: --feature-gates SelfHosting=true
 init_opts: ""

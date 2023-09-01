@@ -6,7 +6,7 @@
     - { role: docker, tags: docker }
     - { role: kubernetes/install, tags: kubernetes }
 
-- hosts: master[0]
+- hosts: master
   gather_facts: yes
   become: yes
   tasks:
@@ -20,15 +20,38 @@
 - hosts: master
   gather_facts: yes
   become: yes
-  roles:
-    - { role: kubernetes/master, tags: master }
-    - { role: cni, tags: cni }
+  tasks:
+    - name: "master role"
+      include_role:
+        name: kubernetes/master
+      run_once: yes
+      tags: master
+    - name: "cni role"
+      include_role:
+        name: cni
+      run_once: yes
+      tags: cni
+
+- hosts: master:!master[0]
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: "master-backup role"
+      include_role:
+        name: kubernetes/master-backup
+      when: 
+        - "kube_vip is defined and kube_vip > 0"
+        - "groups['master'] | length > 2"
+      tags: master-backup
 
 - hosts: node
   gather_facts: yes
   become: yes
-  roles:
-    - { role: kubernetes/node, tags: node }
+  tasks:
+    - name: "node role"
+      include_role:
+        name: kubernetes/node
+      tags: node
 
 - hosts: master
   gather_facts: yes
