@@ -13,7 +13,6 @@
     docker run --network host --rm plndr/kube-vip:v0.6.2 manifest pod \
     --interface {{ network_interface }} \
     --address {{ kube_vip }} \
-    --cidr 21 \
     --controlplane \
     --services \
     --enableLoadBalancer \

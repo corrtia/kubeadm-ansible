@@ -6,8 +6,10 @@
   register: kubeadm_ca
 
 - name: Init cluster if needed
+  when:
+    - not kubeadm_ca.stat.exists
+    - groups['master'] | length > 1
   include_tasks: join.yml
-  when: not kubeadm_ca.stat.exists
 
 - name: Enable and check kubelet service
   systemd:
