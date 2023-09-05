@@ -1,39 +1,15 @@
 ---
 
-- name: Create /etc/kubernetes/manifests/ directory
-  file:
-    path: /etc/kubernetes/manifests/
-    state: directory
+- name: Check if control plane haproxy has already run
+  stat:
+    path: "/etc/kubernetes/manifests/kube-vip.yaml"
+  register: kubeadm_ha
   tags: kube-vip
 
-- name: Pull kube-vip images
-  shell: "docker pull plndr/kube-vip:v0.6.2"
-  tags: kube-vip
-
-- name: Generate kube-vip.yaml
-  shell: |
-    docker run --network host --rm plndr/kube-vip:v0.6.2 manifest pod \
-    --interface {{ network_interface }} \
-    --address {{ kube_vip }} \
-    --controlplane \
-    --services \
-    --enableLoadBalancer \
-    --arp \
-    --leaderElection | tee /etc/kubernetes/manifests/kube-vip.yaml
-  tags: kube-vip
-
-- name: Modify kube-vip.yaml
-  lineinfile:
-    path: /etc/kubernetes/manifests/kube-vip.yaml
-    regexp: "^    image: .*"
-    line: "    image: docker.io/plndr/kube-vip:v0.6.2"
-    state: present
-  tags: kube-vip
-
-- name: Modify kube-vip.yaml image pull policy
-  lineinfile:
-    path: /etc/kubernetes/manifests/kube-vip.yaml
-    regexp: "^    imagePullPolicy: Always"
-    line: "    imagePullPolicy: IfNotPresent"
-    state: present
+- name: Create control plane haproxy if needed
+  include_tasks: pkg.yml
+  when: 
+    - not kubeadm_ha.stat.exists
+    - kube_vip is defined and kube_vip > 0
+  run_once: yes
   tags: kube-vip

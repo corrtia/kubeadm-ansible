@@ -1,60 +1,39 @@
 ---
 - hosts: kube-cluster
-  gather_facts: yes
+  gather_facts: no
   become: yes
   roles:
     - { role: docker, tags: docker }
     - { role: kubernetes/install, tags: kubernetes }
 
-- hosts: master
-  gather_facts: yes
+- hosts: master[0]
+  gather_facts: no
   become: yes
-  tasks:
-    - name: "kube-vip role"
-      include_role:
-        name: kube-vip
-      when: "kube_vip is defined and kube_vip > 0"
-      run_once: yes
-      tags: kube-vip
+  roles:
+    - { role: kube-vip, tags: kube-vip }
 
-- hosts: master
-  gather_facts: yes
+- hosts: master[0]
+  gather_facts: no
   become: yes
   tasks:
-    - name: "master role"
-      include_role:
-        name: kubernetes/master
-      run_once: yes
-      tags: master
-    - name: "cni role"
-      include_role:
-        name: cni
-      run_once: yes
-      tags: cni
+  roles:
+    - { role: kubernetes/master, tags: master }
+    - { role: cni, tags: cni }
 
 - hosts: master:!master[0]
-  gather_facts: yes
+  gather_facts: no
   become: yes
-  tasks:
-    - name: "master-backup role"
-      include_role:
-        name: kubernetes/master-backup
-      when: 
-        - "kube_vip is defined and kube_vip > 0"
-        - "groups['master'] | length > 2"
-      tags: master-backup
+  roles:
+    - { role: kubernetes/master-backup, tags: master-backup }
 
 - hosts: node
-  gather_facts: yes
+  gather_facts: no
   become: yes
-  tasks:
-    - name: "node role"
-      include_role:
-        name: kubernetes/node
-      tags: node
+  roles:
+    - { role: kubernetes/node, tags: node }
 
 - hosts: master
-  gather_facts: yes
+  gather_facts: no
   become: yes
   tasks:
     - name: "Helm role"
