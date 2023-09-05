@@ -3,7 +3,6 @@
 - name: Specify a stable IP address for the control plane
   set_fact:
     control_plane_endpoint: "{{ kube_vip | default(groups['master'][0]) }}"
-  tags: master
 
 - name: Init Kubernetes cluster
   when: 
@@ -26,13 +25,11 @@
     https_proxy: ""
     HTTP_PROXY: ""
     HTTPS_PROXY: ""
-  tags: master
 
 - name: Create Kubernetes config directory
   file:
     path: ".kube/"
     state: directory
-  tags: master
 
 - name: Copy admin.conf to Home directory
   when: init_cluster is succeeded
@@ -43,4 +40,3 @@
     group: "{{ ansible_user | default(ansible_user_id) }}"
     mode: 0755
     remote_src: true
-  tags: master
