@@ -16,7 +16,8 @@
   register: kubernetes_tokens
 
 - name: Nodes join to Kubernetes cluster
-  when: reset_cluster is succeeded
+  when: 
+    - kubernetes_tokens is defined and kubernetes_tokens > 0
   shell: |
     {{ kubernetes_tokens.stdout }}
   # See: https://github.com/jetstack/cert-manager/issues/2640 with using kubeadm + calico + cert-manager
@@ -26,5 +27,3 @@
     https_proxy: ""
     HTTP_PROXY: ""
     HTTPS_PROXY: ""
-  notify:
-    - Recreate kube-dns
