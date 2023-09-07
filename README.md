@@ -1,19 +1,19 @@
 # Kubeadm Ansible Playbook
 
-Build a Kubernetes cluster using Ansible with kubeadm. The goal is easily install a Kubernetes cluster on machines running:
+使用kubeadm和Ansible构建一个简单Kubernetes集群。
+支持的操作系统：
 
   - Ubuntu 16.04
   - CentOS 7
   - Debian 9
 
-System requirements:
+环境要求:
 
-  - Deployment environment must have Ansible `2.4.0+`
-  - Master and nodes must have passwordless SSH access
+  - Ansible `2.4.0+`
 
-# Usage
+# 使用方法
 
-Add the system information gathered above into a file called `hosts.ini`. For example:
+将Kubernetes集群的服务器信息添加到名为 `hosts.ini` 的文件中. 例如:
 ```
 [master]
 192.16.35.12
@@ -26,7 +26,7 @@ master
 node
 ```
 
-If you're working with ubuntu, add the following properties to each host `ansible_python_interpreter='python3'`:
+如果使用ubuntu操作系统，请在每台主机上添加以下内容 `ansible_python_interpreter='python3'`:
 ```
 [master]
 192.16.35.12 ansible_python_interpreter='python3'
@@ -40,18 +40,18 @@ node
 
 ```
 
-Before continuing, edit `group_vars/all.yml` to your specified configuration.
+在安装之前， 请根据您自己的配置修改 `group_vars/all.yml` 配置文件。
 
-For example, I choose to run `flannel` instead of calico, and thus:
+例如，选择使用 `flannel`作为cni插件而不是calico:
 
 ```yaml
 # Network implementation('flannel', 'calico')
 network: flannel
 ```
 
-**Note:** Depending on your setup, you may need to modify `cni_opts` to an available network interface. By default, `kubeadm-ansible` uses `eth1`. Your default interface may be `eth0`.
+**Note:** 根据您的设置，可能需要将 `network_interface` 修改为可用的网卡。默认情况下，`kubeadm-ansible` 使用`eth1`。您的默认接口可能是 `eth0`。
 
-After going through the setup, run the `site.yaml` playbook:
+完成设置后，运行 `site.yaml` playbook:
 
 ```sh
 $ ansible-playbook site.yaml
@@ -65,15 +65,15 @@ $ ansible-playbook site.yaml
 ==> master1: 192.16.35.12               : ok=34   changed=29   unreachable=0    failed=0
 ```
 
-The playbook will download `/etc/kubernetes/admin.conf` file to `$HOME/admin.conf`.
+`kubeadm-ansible`会将`/etc/kubernetes/admin.conf`文件拷贝到主节点`$HOME/.kube/config`下。
 
-If it doesn't work download the `admin.conf` from the master node:
+如果不起作用，请从主节点自行拷贝：
 
 ```sh
-$ scp k8s@k8s-master:/etc/kubernetes/admin.conf .
+$ cp /etc/kubernetes/admin.conf $HOME/.kube/config
 ```
 
-Verify cluster is fully running using kubectl:
+使用 kubectl 验证群集是否完全运行:
 
 ```sh
 
@@ -90,18 +90,18 @@ etcd-master1                            1/1       Running   0          23m
 ...
 ```
 
-# Resetting the environment
+# 重置集群
 
-Finally, reset all kubeadm installed state using `reset-site.yaml` playbook:
+最后，可以使用`reset-site.yaml`重置已安装的Kubernetes集群:
 
 ```sh
 $ ansible-playbook reset-site.yaml
 ```
 
-# Additional features
-These are features that you could want to install to make your life easier.
+# 附加功能
+这些是您可能希望Kubernetes集群附加安装的功能，可以让您使用Kubernetes集群更加轻松便捷。
 
-Enable/disable these features in `group_vars/all.yml` (all disabled by default):
+可以在`group_vars/all.yml`中启用/禁用这些功能（默认情况下全部禁用）：
 ```
 # Additional feature to install
 additional_features:
@@ -111,23 +111,23 @@ additional_features:
 ```
 
 ## Helm
-This will install helm in your cluster (https://helm.sh/) so you can deploy charts.
+在集群中安装`helm` (https://helm.sh/)。
 
 ## MetalLB
-This will install MetalLB (https://metallb.universe.tf/), very useful if you deploy the cluster locally and you need a load balancer to access the services.
+在集群中安装`MetalLB` (https://metallb.universe.tf/)。
 
 ## Healthcheck
-This will install k8s-healthcheck (https://github.com/emrekenci/k8s-healthcheck), a small application to report cluster status.
+在集群中安装`k8s-healthcheck` (https://github.com/emrekenci/k8s-healthcheck), a small application to report cluster status.
 
 # Utils
-Collection of scripts/utilities
+脚本文件集合，scripts/utilities。
 
 ## Vagrantfile
-This Vagrantfile is taken from https://github.com/ecomm-integration-ballerina/kubernetes-cluster and slightly modified to copy ssh keys inside the cluster (install https://github.com/dotless-de/vagrant-vbguest is highly recommended)
+Vagrantfile摘自https://github.com/ecomm-integration-ballerina/kubernetes-cluster，修改后可在集群内复制ssh密钥（建议安装https://github.com/dotless-de/vagrant-vbguest）
 
 # Tips & Tricks
 ## Specify user for Ansible
-If you use vagrant or your remote user is root, add this to `hosts.ini`
+如果使用vagrant或使用root用户，请在 `hosts.ini` 中添加以下内容。
 ```
 [master]
 192.16.35.12 ansible_user='root'
@@ -135,34 +135,4 @@ If you use vagrant or your remote user is root, add this to `hosts.ini`
 [node]
 192.16.35.[10:11] ansible_user='root'
 ```
-
-## Access Kubernetes Dashboard
-As of release 1.7 Dashboard no longer has full admin privileges granted by default, so you need to create a token to access the resources:
-```sh
-$ kubectl -n kube-system create sa dashboard
-$ kubectl create clusterrolebinding dashboard --clusterrole cluster-admin --serviceaccount=kube-system:dashboard
-$ kubectl -n kube-system get sa dashboard -o yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  creationTimestamp: 2017-11-27T17:06:41Z
-  name: dashboard
-  namespace: kube-system
-  resourceVersion: "69076"
-  selfLink: /api/v1/namespaces/kube-system/serviceaccounts/dashboard
-  uid: 56b880bf-d395-11e7-9528-448a5ba4bd34
-secrets:
-- name: dashboard-token-vg52j
-
-$ kubectl -n kube-system describe secrets dashboard-token-vg52j
-...
-token:      eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkYXNoYm9hcmQtdG9rZW4tdmc1MmoiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGFzaGJvYXJkIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiNTZiODgwYmYtZDM5NS0xMWU3LTk1MjgtNDQ4YTViYTRiZDM0Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmRhc2hib2FyZCJ9.bVRECfNS4NDmWAFWxGbAi1n9SfQ-TMNafPtF70pbp9Kun9RbC3BNR5NjTEuKjwt8nqZ6k3r09UKJ4dpo2lHtr2RTNAfEsoEGtoMlW8X9lg70ccPB0M1KJiz3c7-gpDUaQRIMNwz42db7Q1dN7HLieD6I4lFsHgk9NPUIVKqJ0p6PNTp99pBwvpvnKX72NIiIvgRwC2cnFr3R6WdUEsuVfuWGdF-jXyc6lS7_kOiXp2yh6Ym_YYIr3SsjYK7XUIPHrBqWjF-KXO_AL3J8J_UebtWSGomYvuXXbbAUefbOK4qopqQ6FzRXQs00KrKa8sfqrKMm_x71Kyqq6RbFECsHPA
-
-$ kubectl proxy
-```
-> Copy and paste the `token` from above to dashboard.
-
-Login the dashboard:
-- Dashboard: [https://API_SERVER:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/](https://API_SERVER:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/)
-- Logging: [https://API_SERVER:8001/api/v1/namespaces/kube-system/services/kibana-logging/proxy/](https://API_SERVER:8001/api/v1/namespaces/kube-system/services/kibana-logging/proxy/)
 
