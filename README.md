@@ -1,6 +1,7 @@
 # Kubeadm Ansible Playbook
 
 使用kubeadm和Ansible构建一个简单Kubernetes集群。
+
 支持的操作系统：
 
   - Ubuntu 16.04
@@ -49,7 +50,16 @@ node
 network: flannel
 ```
 
-**Note:** 根据您的设置，可能需要将 `network_interface` 修改为可用的网卡。默认情况下，`kubeadm-ansible` 使用`eth1`。您的默认接口可能是 `eth0`。
+**Note:** 根据服务器的环境，可能需要将 `network_interface` 修改为可用的网卡。默认情况下，`kubeadm-ansible` 使用`eth1`。
+
+设置`kube_vip`增加集群高可用功能(默认情况下禁用)。
+
+例如，选择`172.16.10.1`作为高可用的`vip`：
+
+```yaml
+#High Availability and Load-Balancing
+kube_vip: "172.16.10.1"
+```
 
 完成设置后，运行 `site.yaml` playbook:
 
@@ -99,7 +109,7 @@ $ ansible-playbook reset-site.yaml
 ```
 
 # 附加功能
-这些是您可能希望Kubernetes集群附加安装的功能，可以让您使用Kubernetes集群更加轻松便捷。
+这些是可以安装到Kubernetes集群的附加功能，可以让您使用Kubernetes集群时更加轻松便捷。
 
 可以在`group_vars/all.yml`中启用/禁用这些功能（默认情况下全部禁用）：
 ```
@@ -111,23 +121,23 @@ additional_features:
 ```
 
 ## Helm
-在集群中安装`helm` (https://helm.sh/)。
+在集群中安装`helm` (https://helm.sh/)
 
 ## MetalLB
-在集群中安装`MetalLB` (https://metallb.universe.tf/)。
+在集群中安装`MetalLB` (https://metallb.universe.tf/)
 
 ## Healthcheck
-在集群中安装`k8s-healthcheck` (https://github.com/emrekenci/k8s-healthcheck), a small application to report cluster status.
+在集群中安装`k8s-healthcheck` (https://github.com/emrekenci/k8s-healthcheck), a small application to report cluster status
 
 # Utils
-脚本文件集合，scripts/utilities。
+脚本文件集合，scripts/utilities
 
 ## Vagrantfile
-Vagrantfile摘自https://github.com/ecomm-integration-ballerina/kubernetes-cluster，修改后可在集群内复制ssh密钥（建议安装https://github.com/dotless-de/vagrant-vbguest）
+Vagrantfile摘自https://github.com/ecomm-integration-ballerina/kubernetes-cluster， 修改后可在集群内复制ssh密钥（建议安装https://github.com/dotless-de/vagrant-vbguest）
 
 # Tips & Tricks
 ## Specify user for Ansible
-如果使用vagrant或使用root用户，请在 `hosts.ini` 中添加以下内容。
+如果使用vagrant或使用root用户，请在 `hosts.ini` 中添加以下内容：
 ```
 [master]
 192.16.35.12 ansible_user='root'
