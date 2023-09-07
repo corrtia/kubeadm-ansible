@@ -1,18 +1,42 @@
 ---
 
 - name: Specify a stable IP address for the control plane
+  when:
+    - groups['master'] | length > 2
+    - kube_vip is defined and kube_vip | length > 0
   set_fact:
-    control_plane_endpoint: "{{ kube_vip | default(groups['master'][0]) }}"
+    control_plane_endpoint: "{{ kube_vip }}"
 
-- name: Init Kubernetes cluster
+- name: Init Kubernetes cluster with HA
   when: 
-    - control_plane_endpoint is defined and control_plane_endpoint > 0
+    - control_plane is defined and control_plane | length > 0
   shell: |
     kubeadm init --service-cidr {{ service_cidr }} \
                  --kubernetes-version {{ kube_version }} \
                  --pod-network-cidr {{ pod_network_cidr }} \
                  --apiserver-advertise-address {{ master_ip }} \
-                 --control-plane-endpoint {{ control_plane_endpoint }}:6443 \
+                 --control-plane-endpoint {{ control_plane_endpoint }} \
+                 --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers \
+                 --upload-certs \
+                 {{ kubeadm_opts }} \
+                 {{ init_opts }}
+  register: init_cluster
+  # See: https://github.com/jetstack/cert-manager/issues/2640 with using kubeadm + calico + cert-manager
+  environment:
+    #no_proxy: "$no_proxy,.svc,.svc.cluster.local"
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+
+- name: Init Kubernetes cluster without HA
+  when: 
+    - control_plane is not defined
+  shell: |
+    kubeadm init --service-cidr {{ service_cidr }} \
+                 --kubernetes-version {{ kube_version }} \
+                 --pod-network-cidr {{ pod_network_cidr }} \
+                 --apiserver-advertise-address {{ master_ip }} \
                  --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers \
                  --upload-certs \
                  {{ kubeadm_opts }} \
