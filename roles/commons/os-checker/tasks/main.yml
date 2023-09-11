@@ -42,18 +42,19 @@
   register: version_codename
   changed_when: False
 
-- name: Get os_arch from Debian
+- name: Get os architecture (Debian/Ubuntu)
   when: 
-    - os_arch is not defined
+    - debian_arch is not defined
     - os_distro == "Debian"
   raw: "dpkg --print-architecture | tr -d '\n'"
-  register: os_arch
+  register: debian_arch
   changed_when: False
 
-- name: Get os_arch from RedHat
+- name: Get os architecture (RHEL/CentOS)
   when: 
-    - os_arch is not defined
+    - redhat_arch is not defined
     - os_distro == "RedHat"
   raw: "arch | tr -d '\n'"
-  register: os_arch
+  register: redhat_arch
   changed_when: False
+
