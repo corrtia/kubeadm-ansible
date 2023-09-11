@@ -14,7 +14,7 @@
 - name: Add Docker APT repository
   when: os_distro == "Debian"
   apt_repository:
-    repo: deb [arch={{ os_arch.stdout }}] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu  {{ version_codename.stdout }} stable
+    repo: deb [arch={{ debian_arch.stdout }}] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu  {{ version_codename.stdout }} stable
     state: present
     filename: "docker"
 
@@ -24,7 +24,7 @@
     name: Docker
     description: Docker Repository
     file: docker
-    baseurl: https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/{{ os_version.stdout }}/{{ os_arch.stdout }}/stable/
+    baseurl: https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/{{ os_version.stdout }}/{{ redhat_arch.stdout }}/stable/
     enabled: yes
     gpgcheck: yes
     gpgkey: https://download.docker.com/linux/centos/gpg
@@ -38,13 +38,21 @@
       - "containerd.io"
     state: present
 
+- name: Get docker engine version (Debian/Ubuntu)
+  when:
+    - debian_docker_version is not defined
+    - os_distro == "Debian"
+  raw: "apt-cache madison docker-ce | awk '{print $3}' | grep -E '{{ docker_version }}' | tr -d '\n'"
+  register: debian_docker_version
+  changed_when: False
+
 - name: Install docker engine (Debian/Ubuntu)
   when: os_distro == "Debian"
   apt:
     update_cache: yes
     name:       
-      - "docker-ce-{{ docker_version }}"
-      - "docker-ce-cli-{{ docker_version }}"
+      - "docker-ce={{ debian_docker_version.stdout }}"
+      - "docker-ce-cli={{ debian_docker_version.stdout }}"
       - "containerd.io"
     state: present
 
