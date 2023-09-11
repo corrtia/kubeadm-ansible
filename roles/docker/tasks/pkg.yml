@@ -14,7 +14,7 @@
 - name: Add Docker APT repository
   when: os_distro == "Debian"
   apt_repository:
-    repo: deb [arch={{ os_arch.stdout }}] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu  {{ version_codename }} stable
+    repo: deb [arch={{ os_arch.stdout }}] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu  {{ version_codename.stdout }} stable
     state: present
     filename: "docker"
 

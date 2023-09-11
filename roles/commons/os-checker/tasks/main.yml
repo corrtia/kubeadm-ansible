@@ -7,18 +7,6 @@
   register: os_version
   changed_when: False
 
-- name: Get version_codename from /etc/os-release
-  when: os_version is not defined
-  raw: "grep '^VERSION_CODENAME=' /etc/os-release | sed s'/VERSION_CODENAME=//' | sed s'/\"//g' | tr -d '\n'"
-  register: version_codename
-  changed_when: False
-
-- name: Get os_arch from /etc/os-release
-  when: os_arch is not defined
-  raw: "arch | tr -d '\n'"
-  register: os_arch
-  changed_when: False
-
 - name: Get distro name from /etc/os-release
   when: os_distro is not defined
   raw: "grep '^NAME=' /etc/os-release | sed s'/NAME=//'"
@@ -46,7 +34,26 @@
   set_fact:
     os_distro: RedHat
 
-- name: Override config file directory for Debian
-  when: os_distro == "Debian"
-  set_fact:
-    system_env_dir: "/etc/default"
+- name: Get version_codename from /etc/os-release
+  when: 
+    - version_codename is not defined
+    - os_distro == "Debian"
+  raw: "grep '^VERSION_CODENAME=' /etc/os-release | sed s'/VERSION_CODENAME=//' | sed s'/\"//g' | tr -d '\n'"
+  register: version_codename
+  changed_when: False
+
+- name: Get os_arch from /etc/os-release
+  when: 
+    - os_arch is not defined
+    - os_distro == "Debian"
+  raw: "dpkg --print-architecture | tr -d '\n'"
+  register: os_arch
+  changed_when: False
+
+- name: Get os_arch from /etc/os-release
+  when: 
+    - os_arch is not defined
+    - os_distro == "RedHat"
+  raw: "arch | tr -d '\n'"
+  register: os_arch
+  changed_when: False
