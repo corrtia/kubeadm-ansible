@@ -34,7 +34,7 @@
   set_fact:
     os_distro: RedHat
 
-- name: Get version_codename from /etc/os-release
+- name: Get version_codename
   when: 
     - version_codename is not defined
     - os_distro == "Debian"
@@ -42,7 +42,7 @@
   register: version_codename
   changed_when: False
 
-- name: Get os_arch from /etc/os-release
+- name: Get os_arch from Debian
   when: 
     - os_arch is not defined
     - os_distro == "Debian"
@@ -50,7 +50,7 @@
   register: os_arch
   changed_when: False
 
-- name: Get os_arch from /etc/os-release
+- name: Get os_arch from RedHat
   when: 
     - os_arch is not defined
     - os_distro == "RedHat"
