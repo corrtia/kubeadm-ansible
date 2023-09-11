@@ -8,7 +8,6 @@
 - name: Join to cluster
   when:
     - not kubelet_conf.stat.exists
-    - groups['master'] | length > 1
   include_tasks: join.yml
 
 - name: Enable and check kubelet service

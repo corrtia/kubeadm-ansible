@@ -4,12 +4,10 @@
   stat:
     path: "/etc/kubernetes/manifests/kube-vip.yaml"
   register: kubeadm_ha
-  tags: kube-vip
 
 - name: Create control plane haproxy if needed
   include_tasks: pkg.yml
   when: 
     - not kubeadm_ha.stat.exists
-    - kube_vip is defined and kube_vip > 0
+    - kube_vip is defined and kube_vip | length > 0
   run_once: yes
-  tags: kube-vip

@@ -4,11 +4,9 @@
   file:
     path: /etc/kubernetes/manifests/
     state: directory
-  tags: kube-vip
 
 - name: Pull kube-vip images
   shell: "docker pull plndr/kube-vip:v0.6.2"
-  tags: kube-vip
 
 - name: Generate kube-vip.yaml
   shell: |
@@ -20,7 +18,6 @@
     --enableLoadBalancer \
     --arp \
     --leaderElection | tee /etc/kubernetes/manifests/kube-vip.yaml
-  tags: kube-vip
 
 - name: Modify kube-vip.yaml
   lineinfile:
@@ -28,7 +25,6 @@
     regexp: "^    image: .*"
     line: "    image: docker.io/plndr/kube-vip:v0.6.2"
     state: present
-  tags: kube-vip
 
 - name: Modify kube-vip.yaml image pull policy
   lineinfile:
@@ -36,4 +32,3 @@
     regexp: "^    imagePullPolicy: Always"
     line: "    imagePullPolicy: IfNotPresent"
     state: present
-  tags: kube-vip

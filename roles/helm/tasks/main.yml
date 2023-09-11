@@ -25,7 +25,7 @@
           DESIRED_VERSION: "{{ helm_version }}"
       shell: "{{ tmp_dir }}/get_helm.sh"
 
-  when: helm_exists.rc > 0
+  when: helm_exists.rc | length > 0
   tags: helm
 
 - name: "Copy yaml file"

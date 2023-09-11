@@ -1,18 +1,29 @@
 ---
 
-- name: Reset Kubernetes component
-  shell: "kubeadm reset --force"
-  register: reset_cluster
+#- name: Reset Kubernetes component
+#  shell: "kubeadm reset --force"
+#  register: reset_cluster
+
+- name: Create bootstrap tokens
+  shell: kubeadm token create --print-join-command
+  environment:
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+  register: kubernetes_tokens
 
 - name: Nodes join to Kubernetes cluster
-  when: reset_cluster is succeeded
+  when: 
+    - kubernetes_tokens is defined and kubernetes_tokens | length > 0
   shell: |
-    kubeadm join --token {{ token }} \
-                --discovery-token-unsafe-skip-ca-verification \
-                {{ master_ip }}:6443
-  register: join_cluster
+    {{ kubernetes_tokens.stdout }}
   # See: https://github.com/jetstack/cert-manager/issues/2640 with using kubeadm + calico + cert-manager
   environment:
-    no_proxy: "$no_proxy,.svc,.svc.cluster.local"
-  notify:
-    - Recreate kube-dns
+    #no_proxy: "$no_proxy,.svc,.svc.cluster.local"
+    http_proxy: ""
+    https_proxy: ""
+    HTTP_PROXY: ""
+    HTTPS_PROXY: ""

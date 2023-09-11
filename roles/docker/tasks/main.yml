@@ -14,21 +14,21 @@
     dest: "/etc/docker/daemon.json"
 
 - name: Add registry to Docker config
-  when: docker_registry_mirrors is defined and docker_registry_mirrors > 0
+  when: docker_registry_mirrors is defined and docker_registry_mirrors | length > 0
   lineinfile: 
     path: /etc/docker/daemon.json
     regexp: '^(\s*)"registry-mirrors": .*'
     line : '    "registry-mirrors": [ "{{ docker_registry_mirrors }}" ],'
 
 - name: Add dns server to Docker config
-  when: docker_dns is defined and docker_dns > 0
+  when: docker_dns is defined and docker_dns | length > 0
   lineinfile: 
     dest: /etc/docker/daemon.json
     regexp: '^(\s*)"dns".*'
     line: '    "dns": [ "{{ docker_dns }}" ],'
 
 - name: Add insecure registries to Docker config
-  when: docker_insecure_registries is defined and docker_insecure_registries > 0
+  when: docker_insecure_registries is defined and docker_insecure_registries | length > 0
   lineinfile: 
     dest: /etc/docker/daemon.json
     regexp: '^(\s*)"insecure-registries".*'

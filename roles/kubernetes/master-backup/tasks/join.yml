@@ -26,13 +26,13 @@
   run_once: true
   register: kubernetes_certificates
 
-- name: Masters join to Kubernetes cluster
+- name: Master join to Kubernetes cluster
   when: 
-    - kubernetes_tokens is defined and kubernetes_tokens > 0
-    - kubernetes_certificates is defined and kubernetes_certificates > 0
+    - kubernetes_tokens is defined and kubernetes_tokens | length > 0
+    - kubernetes_certificates is defined and kubernetes_certificates | length > 0
   shell: |
     {{ kubernetes_tokens.stdout }} \
-    --control-plane --certificate-key {{ certkubernetes_certificates_cmd.stdout.split('key:\n')[-1] }}
+    --control-plane --certificate-key {{ kubernetes_certificates.stdout_lines[-1] }}
   register: master_join_cluster
   # See: https://github.com/jetstack/cert-manager/issues/2640 with using kubeadm + calico + cert-manager
   environment:

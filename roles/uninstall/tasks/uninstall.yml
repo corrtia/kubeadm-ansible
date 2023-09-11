@@ -52,6 +52,8 @@
       - "docker-ce-cli"
       - "docker-ce-rootless-extras"
       - "docker-scan-plugin"
+      - "docker-buildx-plugin"
+      - "docker-compose-plugin"
       - "containerd.io"
     state: absent
 
@@ -72,6 +74,8 @@
       - "docker-ce-cli"
       - "docker-ce-rootless-extras"
       - "docker-scan-plugin"
+      - "docker-buildx-plugin"
+      - "docker-compose-plugin"
       - "containerd.io"  
     state: absent
 

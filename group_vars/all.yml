@@ -6,10 +6,10 @@ docker_version: 20.10.17
 
 # A list of insecure registries you might need to define
 # docker_insecure_registries: ""
-docker_registry_mirrors: "https://registry.docker-cn.com"
+docker_registry_mirrors: "https://docker.mirrors.ustc.edu.cn"
 docker_dns: "8.8.8.8"
-docker_insecure_registries: "https://registry.docker-cn.com"
-#docker_default_runtime: 
+docker_insecure_registries: "https://docker.mirrors.ustc.edu.cn"
+#docker_default_runtime:
 
 # Kubernetes
 kube_version: 1.23.0
@@ -31,10 +31,10 @@ network: calico
 
 # Change this to an appropriate interface, preferably a private network.
 # For example, on DigitalOcean, you would use eth1 as that is the default private network interface.
-network_interface: "bond0"
+network_interface: "eth0"
 
-kube_vip: "10.106.21.104"
-
+#High Availability and Load-Balancing
+kube_vip: ""
 
 #systemd_dir: /lib/systemd/system
 #system_env_dir: /etc/sysconfig
