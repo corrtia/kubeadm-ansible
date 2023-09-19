@@ -2,14 +2,14 @@
 
 - name: Specify a stable IP address for the control plane
   when:
-    - groups['master'] | length > 2
+    #- groups['master'] | length > 2
     - kube_vip is defined and kube_vip | length > 0
   set_fact:
     control_plane_endpoint: "{{ kube_vip }}"
 
 - name: Init Kubernetes cluster with HA
   when: 
-    - control_plane is defined and control_plane | length > 0
+    - control_plane_endpoint is defined and control_plane_endpoint | length > 0
   shell: |
     kubeadm init --service-cidr {{ service_cidr }} \
                  --kubernetes-version {{ kube_version }} \
@@ -31,7 +31,7 @@
 
 - name: Init Kubernetes cluster without HA
   when: 
-    - control_plane is not defined
+    - control_plane_endpoint is not defined
   shell: |
     kubeadm init --service-cidr {{ service_cidr }} \
                  --kubernetes-version {{ kube_version }} \

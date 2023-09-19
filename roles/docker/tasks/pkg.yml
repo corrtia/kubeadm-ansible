@@ -24,7 +24,7 @@
     name: Docker
     description: Docker Repository
     file: docker
-    baseurl: https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/{{ os_version.stdout }}/{{ redhat_arch.stdout }}/stable/
+    baseurl: https://mirrors.aliyun.com/docker-ce/linux/centos/{{ os_version.stdout }}/{{ redhat_arch.stdout }}/stable/
     enabled: yes
     gpgcheck: yes
     gpgkey: https://download.docker.com/linux/centos/gpg
