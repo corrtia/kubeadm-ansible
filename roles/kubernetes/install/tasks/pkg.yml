@@ -35,7 +35,7 @@
 
 - name: Get kubernetes version (Debian/Ubuntu)
   when:
-    - debian_docker_version is not defined
+    - debian_kube_version is not defined
     - os_distro == "Debian"
   raw: "apt-cache madison kubelet | awk '{print $3}' | grep -E '{{ kube_version }}' | tr -d '\n'"
   register: debian_kube_version
