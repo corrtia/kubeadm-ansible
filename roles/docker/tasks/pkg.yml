@@ -55,9 +55,3 @@
       - "docker-ce-cli={{ debian_docker_version.stdout }}"
       - "containerd.io"
     state: present
-
-- name: Hold docker version
-  when: os_distro == "Debian"
-  dpkg_selections:
-    name: docker-ce
-    selection: hold
