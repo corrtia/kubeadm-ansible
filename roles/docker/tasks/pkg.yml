@@ -2,7 +2,11 @@
 - name: Install apt-transport-https
   when: os_distro == "Debian"
   apt:
-    name: "apt-transport-https"
+    name: 
+      - "apt-transport-https"
+      - "ca-certificates"
+      - "curl"
+      - "software-properties-common"
     state: present
     update_cache: yes
 
