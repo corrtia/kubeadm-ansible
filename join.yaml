@@ -1,0 +1,14 @@
+---
+- hosts: node
+  gather_facts: no
+  become: yes
+  roles:
+    - { role: docker, tags: docker }
+    - { role: kubernetes/install, tags: kubernetes }
+
+- hosts: node
+  gather_facts: no
+  become: yes
+  roles:
+    - { role: kubernetes/node, tags: node }
+
