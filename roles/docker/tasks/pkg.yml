@@ -8,7 +8,7 @@
       - "curl"
       - "software-properties-common"
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Add Docker APT GPG key
   when: os_distro == "Debian"
@@ -53,7 +53,7 @@
 - name: Install docker engine (Debian/Ubuntu)
   when: os_distro == "Debian"
   apt:
-    update_cache: yes
+    update_cache: true
     name:       
       - "docker-ce={{ debian_docker_version.stdout }}"
       - "docker-ce-cli={{ debian_docker_version.stdout }}"
