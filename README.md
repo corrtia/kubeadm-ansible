@@ -52,13 +52,13 @@ network: flannel
 
 **Note:** 根据服务器的环境，可能需要将 `network_interface` 修改为可用的网卡。默认情况下，`kubeadm-ansible` 使用`eth1`。
 
-设置`kube_vip`增加集群高可用功能(默认情况下禁用)。
+设置`vip`增加集群高可用功能(默认情况下禁用)。
 
 例如，选择`172.16.10.1`作为高可用的`vip`：
 
 ```yaml
 #High Availability and Load-Balancing
-kube_vip: "172.16.10.1"
+vip: "172.16.10.1"
 ```
 
 完成设置后，运行 `site.yaml` playbook:

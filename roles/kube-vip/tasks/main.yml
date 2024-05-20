@@ -9,5 +9,5 @@
   include_tasks: pkg.yml
   when: 
     - not kubeadm_ha.stat.exists
-    - kube_vip is defined and kube_vip | length > 0
+    - vip is defined and vip | length > 0
   run_once: yes

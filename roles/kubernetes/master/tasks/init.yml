@@ -3,9 +3,9 @@
 - name: Specify a stable IP address for the control plane
   when:
     #- groups['master'] | length > 2
-    - kube_vip is defined and kube_vip | length > 0
+    - vip is defined and vip | length > 0
   set_fact:
-    control_plane_endpoint: "{{ kube_vip }}"
+    control_plane_endpoint: "{{ vip }}"
 
 - name: Init Kubernetes cluster with HA
   when: 

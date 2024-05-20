@@ -1,0 +1,4 @@
+server = "https://registry.jujucharms.com"
+
+[host."https://jujucharms.m.daocloud.io"]
+  capabilities = ["pull", "resolve", "push"]

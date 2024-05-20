@@ -1,0 +1,4 @@
+server = "https://gcr.io"
+
+[host."https://gcr.m.daocloud.io"]
+  capabilities = ["pull", "resolve", "push"]

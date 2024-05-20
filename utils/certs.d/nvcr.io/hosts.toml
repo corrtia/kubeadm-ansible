@@ -1,0 +1,4 @@
+server = "https://nvcr.io"
+
+[host."https://nvcr.m.daocloud.io"]
+  capabilities = ["pull", "resolve", "push"]

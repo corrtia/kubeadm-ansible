@@ -2,15 +2,35 @@
 - hosts: kube-cluster
   gather_facts: no
   become: yes
-  roles:
-    - { role: docker, tags: docker }
-    - { role: kubernetes/install, tags: kubernetes }
+  tasks:
+    - name: "containerd role"
+      include_role:
+        name: container-runtime/containerd
+      when: container_runtime == "containerd" or container_runtime == "docker" 
+      tags: containerd
 
-- hosts: master[0]
+    - name: "docker role"
+      include_role:
+        name: container-runtime/docker
+      when: container_runtime == "docker" 
+      tags: docker
+
+- hosts: kube-cluster
   gather_facts: no
   become: yes
   roles:
-    - { role: kube-vip, tags: kube-vip }
+    - { role: kubernetes/install, tags: kubernetes }
+
+- hosts: master
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: "kube-vip role"
+      include_role:
+        name: kube-vip
+      when: "kubevip"
+      run_once: yes
+      tags: kube-vip
 
 - hosts: master[0]
   gather_facts: no
@@ -43,17 +63,4 @@
       run_once: yes
       tags: helm
 
-    - name: "MetalLB role"
-      include_role:
-        name: metallb
-      when: "additional_features.metallb"
-      run_once: yes
-      tags: metallb
-
-    - name: "Healthcheck role"
-      include_role:
-        name: healthcheck
-      when: "additional_features.healthcheck"
-      run_once: yes
-      tags: healthcheck
 

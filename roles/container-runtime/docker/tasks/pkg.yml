@@ -1,0 +1,27 @@
+---
+- name: Install docker engine (RHEL/CentOS)
+  when: os_distro == "RedHat"
+  yum:
+    name: 
+      - "docker-ce-{{ docker_version }}"
+      - "docker-ce-cli-{{ docker_version }}"
+      - "containerd.io"
+    state: present
+
+- name: Get docker engine version (Debian/Ubuntu)
+  when:
+    - debian_docker_version is not defined
+    - os_distro == "Debian"
+  raw: "apt-cache madison docker-ce | awk '{print $3}' | grep -E '{{ docker_version }}' | tr -d '\n'"
+  register: debian_docker_version
+  changed_when: False
+
+- name: Install docker engine (Debian/Ubuntu)
+  when: os_distro == "Debian"
+  apt:
+    update_cache: true
+    name:       
+      - "docker-ce={{ debian_docker_version.stdout }}"
+      - "docker-ce-cli={{ debian_docker_version.stdout }}"
+      - "containerd.io"
+    state: present

@@ -1,0 +1,4 @@
+server = "https://rocks.canonical.com"
+
+[host."https://rocks-canonical.m.daocloud.io"]
+  capabilities = ["pull", "resolve", "push"]

@@ -1,0 +1,4 @@
+server = "https://mcr.microsoft.com"
+
+[host."https://mcr.m.daocloud.io"]
+  capabilities = ["pull", "resolve", "push"]

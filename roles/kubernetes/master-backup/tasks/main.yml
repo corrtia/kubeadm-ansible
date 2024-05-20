@@ -9,7 +9,7 @@
   when:
     - not kubeadm_ca.stat.exists
     - groups['master'] | length > 2
-    - kube_vip is defined and kube_vip | length > 0
+    - vip is defined and vip | length > 0
   include_tasks: join.yml
 
 - name: Enable and check kubelet service

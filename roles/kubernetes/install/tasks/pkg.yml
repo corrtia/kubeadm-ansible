@@ -9,7 +9,7 @@
 - name: Add Kubernetes APT repository
   when: os_distro == "Debian"
   apt_repository:
-    repo: deb https://mirrors.tuna.tsinghua.edu.cn/kubernetes/apt kubernetes-xenial main
+    repo: deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
     state: present
     filename: 'kubernetes'
 

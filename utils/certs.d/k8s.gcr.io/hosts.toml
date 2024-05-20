@@ -1,0 +1,4 @@
+server = "https://k8s.gcr.io"
+
+[host."https://k8s-gcr.m.daocloud.io"]
+  capabilities = ["pull", "resolve", "push"]

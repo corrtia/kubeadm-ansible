@@ -1,0 +1,4 @@
+server = "https://docker.elastic.co"
+
+[host."https://elastic.m.daocloud.io"]
+  capabilities = ["pull", "resolve", "push"]
