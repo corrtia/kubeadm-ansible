@@ -3,11 +3,13 @@
   include_tasks: pkg.yml
 
 - name: Create Containerd config directory
+  when: container_runtime == "containerd"
   file:
     path: "/etc/containerd/certs.d"
     state: directory
 
 - name: Copy Containerd environment config file
+  when: container_runtime == "containerd"
   register: change_containerd
   template:
     src: "config.toml.j2"
@@ -25,6 +27,7 @@
     state: directory
 
 - name: Write hosts.toml
+  when: registry_domain is defined and registry_domain | length > 0
   copy:
     dest: "/etc/containerd/certs.d/{{ registry_domain }}/hosts.toml"
     content: |
