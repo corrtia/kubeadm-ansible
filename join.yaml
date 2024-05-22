@@ -2,9 +2,24 @@
 - hosts: node
   gather_facts: no
   become: yes
+  tasks:
+    - name: "containerd role"
+      include_role:
+        name: container-runtime/containerd
+      when: container_runtime == "containerd" or container_runtime == "docker" 
+
+    - name: "docker role"
+      include_role:
+        name: container-runtime/docker
+      when: container_runtime == "docker" 
+  tags: container-runtime
+
+- hosts: node
+  gather_facts: no
+  become: yes
   roles:
-    - { role: docker, tags: docker }
     - { role: kubernetes/install, tags: kubernetes }
+
 
 - hosts: node
   gather_facts: no
