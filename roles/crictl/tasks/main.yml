@@ -1,0 +1,44 @@
+---
+- name: "Create tmp directory"
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
+    mode: 0755
+  tags: crictl
+
+- name: "Check if crictl is installed"
+  shell: command -v crictl >/dev/null 2>&1
+  register: crictl_exists
+  ignore_errors: yes
+  tags: crictl
+
+- name: "Install crictl"
+  block:
+    - name: "Get crictl installer"
+      get_url:
+        url: https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ crictl_version }}/crictl-{{ crictl_version }}-linux-{{ debian_arch }}.tar.gz
+        dest: "{{ tmp_dir }}/crictl-{{ crictl_version }}-linux-{{ debian_arch }}.tar.gz"
+        mode: 0755
+
+    - name: "Run the installer"
+      environment:
+          DESIRED_VERSION: "{{ crictl_version }}"
+      shell: "tar xf {{ tmp_dir }}/crictl-{{ crictl_version }}-linux-{{ debian_arch }}.tar.gz -C /usr/local/bin" 
+  when: crictl_exists.rc != 0
+  tags: crictl
+
+- name: Write crictl.yaml
+  copy:
+    dest: "/etc/crictl.yaml"
+    content: |
+      runtime-endpoint: unix:///run/containerd/containerd.sock
+      image-endpoint: unix:///run/containerd/containerd.sock
+      timeout: 2
+      pull-image-on-create: false
+
+- name: "Clean-up"
+  file:
+    path: "{{ tmp_dir }}"
+    state: absent
+  ignore_errors: yes
+  tags: crictl

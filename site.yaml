@@ -62,4 +62,11 @@
       run_once: yes
       tags: helm
 
+    - name: "crictl role"
+      include_role:
+        name: crictl
+      when: "additional_features.crictl"
+      run_once: yes
+      tags: crictl
+
 

@@ -3,28 +3,28 @@
 
 
 # Container runtimes ('containerd', 'docker')
-container_runtime: docker
+container_runtime: containerd
 
 # Dokcer engine version
-# containerd_version: 1.6.31
+containerd_version: 1.6.31
 
 # A list of insecure registries you might need to define
-# containerd_registry_mirrors: "https://docker.m.daocloud.io"
+containerd_registry_mirrors: "https://docker.m.daocloud.io"
 # containerd_dns: "8.8.8.8"
 # containerd_default_runtime:
 
 # Dokcer engine version
-docker_version: 24.0.7
+# docker_version: 24.0.7
 
 # A list of insecure registries you might need to define
 # docker_data_root: /var/lib/docker
-docker_registry_mirrors: "https://docker.m.daocloud.io"
-docker_dns: "8.8.8.8"
-docker_insecure_registries: "https://docker.m.daocloud.io"
+# docker_registry_mirrors: "https://docker.m.daocloud.io"
+# docker_dns: "8.8.8.8"
+# docker_insecure_registries: "https://docker.m.daocloud.io"
 # docker_default_runtime:
 
 # Kubernetes
-kube_version: 1.18.0
+kube_version: 1.28.2
 
 #High Availability and Load-Balancing
 kubevip: false
@@ -60,8 +60,11 @@ tmp_dir: /tmp/kubeadm-ansible-files
 
 # Additional feature to install
 additional_features:
-  helm: true
+  helm: false
   crictl: false
 
-# helm helm version
+# helm version
 helm_version: v3.14.3
+
+# crictl version
+crictl_version: v1.30.0
