@@ -11,7 +11,7 @@
 - name: Generate kube-vip.yaml
   shell: |
     docker run --network host --rm plndr/kube-vip:v0.6.2 manifest pod \
-    --interface {{ network_interface }} \
+    --interface {{ vip_interface }} \
     --address {{ vip }} \
     --controlplane \
     --services \
