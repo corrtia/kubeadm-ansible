@@ -27,21 +27,28 @@ master
 node
 ```
 
-如果使用ubuntu操作系统，请在每台主机上添加以下内容 `ansible_python_interpreter='python3'`:
-```
-[master]
-192.16.35.12 ansible_python_interpreter='python3'
-
-[node]
-192.16.35.[10:11] ansible_python_interpreter='python3'
-
-[kube-cluster:children]
-master
-node
-
-```
-
 在安装之前， 请根据您自己的配置修改 `group_vars/all.yml` 配置文件。
+
+例如，选择不同的容器运行时（container_runtime）
+```yaml
+# Container runtimes ('containerd', 'docker')
+container_runtime: docker
+```
+
+根据不同的容器运行时选择不同的配置
+```yaml
+# Dokcer engine version
+docker_version: 24.0.7
+
+# A list of insecure registries you might need to define
+# docker_data_root: /var/lib/docker
+docker_registry_mirrors: "https://docker.m.daocloud.io"
+docker_dns: "8.8.8.8"
+docker_insecure_registries: "https://docker.m.daocloud.io"
+# docker_default_runtime:
+```
+
+**Note:** utils/certs.d保存了containerd常用的镜像仓库
 
 例如，选择使用 `flannel`作为cni插件而不是calico:
 
@@ -52,13 +59,14 @@ network: flannel
 
 **Note:** 根据服务器的环境，可能需要将 `network_interface` 修改为可用的网卡。默认情况下，`kubeadm-ansible` 使用`eth1`。
 
-设置`vip`增加集群高可用功能(默认情况下禁用)。
+设置`kubevip`增加集群高可用功能(默认情况下禁用)。
 
-例如，选择`172.16.10.1`作为高可用的`vip`：
+例如，选择`172.16.10.1`作为高可用的`vip`，选择`eth0`作为高可用的网卡设备`vip_interface`：
 
 ```yaml
 #High Availability and Load-Balancing
 vip: "172.16.10.1"
+vip_interface: "eth0"
 ```
 
 完成设置后，运行 `site.yaml` playbook:
@@ -116,33 +124,15 @@ $ ansible-playbook reset-site.yaml
 # Additional feature to install
 additional_features:
   helm: false
-  metallb: false
-  healthcheck: false
+  crictl: false
 ```
 
 ## Helm
-在集群中安装`helm` (https://helm.sh/)
+在集群中安装`helm` (https://helm.sh)
 
-## MetalLB
-在集群中安装`MetalLB` (https://metallb.universe.tf/)
-
-## Healthcheck
-在集群中安装`k8s-healthcheck` (https://github.com/emrekenci/k8s-healthcheck), a small application to report cluster status
+## crictl
+在集群中安装`crictl` (https://github.com/kubernetes-sigs/cri-tools)
 
 # Utils
-脚本文件集合，scripts/utilities
-
-## Vagrantfile
-Vagrantfile摘自https://github.com/ecomm-integration-ballerina/kubernetes-cluster， 修改后可在集群内复制ssh密钥（建议安装https://github.com/dotless-de/vagrant-vbguest）
-
-# Tips & Tricks
-## Specify user for Ansible
-如果使用vagrant或使用root用户，请在 `hosts.ini` 中添加以下内容：
+文件集合
 ```
-[master]
-192.16.35.12 ansible_user='root'
-
-[node]
-192.16.35.[10:11] ansible_user='root'
-```
-
