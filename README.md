@@ -132,7 +132,3 @@ additional_features:
 
 ## crictl
 在集群中安装`crictl` (https://github.com/kubernetes-sigs/cri-tools)
-
-# Utils
-文件集合
-```
