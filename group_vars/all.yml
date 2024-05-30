@@ -24,7 +24,7 @@ docker_insecure_registries: "https://docker.m.daocloud.io"
 # docker_default_runtime:
 
 # Kubernetes
-kube_version: 1.18.0
+kube_version: 1.23.0
 
 #High Availability and Load-Balancing
 kubevip: false

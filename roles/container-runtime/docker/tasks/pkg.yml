@@ -21,7 +21,7 @@
   apt:
     update_cache: true
     name:       
-      - "docker-ce={{ debian_docker_version.stdout }}"
-      - "docker-ce-cli={{ debian_docker_version.stdout }}"
+      - "docker-ce={{ debian_docker_version.stdout | trim }}"
+      - "docker-ce-cli={{ debian_docker_version.stdout | trim }}"
       - "containerd.io"
     state: present
