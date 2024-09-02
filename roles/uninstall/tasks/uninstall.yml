@@ -55,6 +55,7 @@
       - "docker-buildx-plugin"
       - "docker-compose-plugin"
       - "containerd.io"
+      - "containerd"
     state: absent
 
 - name: Uninstall kubernetes (RHEL/CentOS)
@@ -77,6 +78,7 @@
       - "docker-buildx-plugin"
       - "docker-compose-plugin"
       - "containerd.io"  
+      - "containerd"
     state: absent
 
 - name: Uninstall kubernetes and (Debian/Ubuntu)
