@@ -17,6 +17,18 @@
 - name: Importing kernel modules
   shell: "modprobe overlay && modprobe br_netfilter"
 
+- name: Make overlay module persistent
+  ansible.builtin.lineinfile:
+    path: /etc/modules-load.d/overlay.conf
+    line: overlay
+    create: yes
+
+- name: Make br_netfilter module persistent
+  ansible.builtin.lineinfile:
+    path: /etc/modules-load.d/br_netfilter.conf
+    line: br_netfilter
+    create: yes
+
 - name: Disable swappiness and pass bridged IPv4 traffic to iptable's chains
   sysctl:
     name: "{{ item.name }}"
